@@ -1,0 +1,1 @@
+repo_url = 817577330782.dkr.ecr.us-east-1.amazonaws.com/churn-prediction-lambda
