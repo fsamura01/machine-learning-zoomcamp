@@ -1,0 +1,5 @@
+serving_default
+input_8 - input
+dense_7 - output
+
+note-book-url = "http://localhost:8888/notebooks/tf-serving-connect.ipynb"

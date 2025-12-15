@@ -1,0 +1,17 @@
+[project]
+name = "10-kubernetes"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "flask>=3.1.2",
+    "grpcio>=1.60.0",
+    "tensorflow-serving-api>=2.14.0",
+    "jupyter>=1.1.1",
+    "keras-image-helper>=0.0.2",
+    "scikit-learn>=1.8.0",
+    "tensorflow>=2.20.0",
+    "gunicorn",
+    "gunicorn>=23.0.0",
+]
