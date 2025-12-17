@@ -128,3 +128,168 @@ services:
 
 - After mapping, you can point `TF_SERVING_HOST` at `localhost:8500` from the host machine for local testing.
 
+## Kubernetes (k8s) deployment
+
+- Manifests live in `kube-config/` and define two deployments and services:
+  - Deployment `tf-serving-clothing-model` (image `clothing-model:xception-v4-001`) + Service `tf-serving-clothing-model` (ClusterIP, port 8500)
+  - Deployment `gateway` (image `clothing-model-gateway:001`) + Service `gateway` (LoadBalancer, service port 80 -> container port 9696)
+- The `gateway` Deployment sets `TF_SERVING_HOST` to the cluster DNS name `tf-serving-clothing-model.default.svc.cluster.local:8500` so the gateway resolves TF Serving via Kubernetes DNS inside the cluster. Keep that hostname when operating inside the cluster.
+- Resource requests/limits are present in the manifests (example: `gateway` requests `cpu: 200m`, `memory: 256Mi`, limits `cpu: 500m`, `memory: 512Mi`). Respect these when editing manifests.
+
+### Common k8s commands
+
+- Apply manifests (from repo root):
+
+  kubectl apply -f kube-config/
+
+- Watch resources:
+
+  kubectl get pods,svc -n default
+  kubectl describe deployment gateway
+
+- View logs:
+
+  kubectl logs -l app=gateway --tail=200
+
+- Port-forward for local testing (example):
+
+  # Forward gateway service port 80 to local 9696
+  kubectl port-forward svc/gateway 9696:80
+
+  # Forward TF Serving (gRPC) to local 8500 for direct testing
+  kubectl port-forward svc/tf-serving-clothing-model 8500:8500
+
+- After port-forwarding you can run the example client against `http://localhost:9696/predict` or point `TF_SERVING_HOST` at `localhost:8500` for local runs.
+
+### Notes when editing manifests
+
+- If swapping images, update image names in the YAMLs (`image:` fields) and rebuild/tag images accordingly.
+- Keep the service names and ports in sync with `TF_SERVING_HOST` and `gateway.py` (`input` and `output` tensor names remain unchanged).
+
+## K8s manifest snippets (quick reference)
+
+- Gateway Deployment (excerpt):
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gateway
+spec:
+  template:
+    spec:
+      containers:
+      - name: gateway
+        image: clothing-model-gateway:001
+        ports:
+        - containerPort: 9696
+        env:
+        - name: TF_SERVING_HOST
+          value: tf-serving-clothing-model.default.svc.cluster.local:8500
+```
+
+- TF Serving Deployment (excerpt):
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tf-serving-clothing-model
+spec:
+  template:
+    spec:
+      containers:
+      - name: tf-serving-clothing-model
+        image: clothing-model:xception-v4-001
+        ports:
+        - containerPort: 8500
+```
+
+## Kubernetes troubleshooting checklist
+
+- Pod status problems:
+  - `kubectl get pods` — inspect status.
+  - `kubectl describe pod <pod>` — inspect events (image pull, OOMKilled, CrashLoopBackOff reasons).
+  - `kubectl logs <pod> [-c <container>]` — view container logs.
+
+- Image pull errors:
+  - Verify `image:` names/tags and registry access.
+  - If private registry, ensure imagePullSecrets are configured.
+
+- DNS / service resolution:
+  - From a debug pod: `kubectl run -it --rm debug --image=alpine -- sh` then `nslookup tf-serving-clothing-model`.
+  - Ensure `TF_SERVING_HOST` matches the service name and namespace (e.g., `tf-serving-clothing-model.default.svc.cluster.local:8500`).
+
+- Resource problems (OOM, scheduling):
+  - Check requests/limits in the Deployment; scale up requests or cluster capacity if scheduling fails.
+
+- Port-forwarding and local testing:
+  - Use `kubectl port-forward svc/gateway 9696:80` and `kubectl port-forward svc/tf-serving-clothing-model 8500:8500` to test locally.
+
+- If you change the SavedModel:
+  - Rebuild the `image-model.dockerfile` image or update the volume/source used by TF Serving, then redeploy.
+
+## Quick kubectl fixes (common commands)
+
+Below are the same fixes with `bash`, PowerShell, and Windows `cmd` variants where quoting differs.
+
+- Patch a Deployment to add `imagePullSecrets` (after creating a secret with `kubectl create secret docker-registry ...`):
+
+```bash
+# bash (Linux / macOS)
+kubectl patch deployment gateway \
+  -p '{"spec":{"template":{"spec":{"imagePullSecrets":[{"name":"my-registry-secret"}]}}}}'
+```
+
+```powershell
+# PowerShell (use single quotes to wrap the JSON)
+kubectl patch deployment gateway -p '{"spec":{"template":{"spec":{"imagePullSecrets":[{"name":"my-registry-secret"}]}}}}'
+```
+
+```cmd
+:: Windows CMD (escape inner quotes)
+kubectl patch deployment gateway -p "{\"spec\":{\"template\":{\"spec\":{\"imagePullSecrets\":[{\"name\":\"my-registry-secret\"}]}}}}"
+```
+
+Note: you can create the registry secret like this (works on all shells, substitute values):
+
+```bash
+kubectl create secret docker-registry my-registry-secret \
+  --docker-server=<registry> --docker-username=<user> --docker-password=<pass> --docker-email=<email>
+```
+
+- Scale a Deployment:
+
+```bash
+kubectl scale deployment gateway --replicas=3
+```
+
+- Update container image (zero-downtime via rollout):
+
+```bash
+kubectl set image deployment gateway gateway=clothing-model-gateway:002
+kubectl rollout status deployment gateway
+```
+
+- Update resource requests/limits:
+
+```bash
+kubectl set resources deployment gateway \
+  --requests=cpu=200m,memory=256Mi --limits=cpu=500m,memory=512Mi
+```
+
+- Edit a manifest interactively (then `kubectl rollout restart` to apply changes):
+
+```bash
+kubectl edit deployment gateway
+kubectl rollout restart deployment gateway
+```
+
+- Rollback or inspect rollout history:
+
+```bash
+kubectl rollout history deployment gateway
+kubectl rollout undo deployment gateway --to-revision=2
+```
+
+

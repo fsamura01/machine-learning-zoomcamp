@@ -58,6 +58,7 @@ classes = [
 
 def prepare_response(predict_response):
     predictions = predict_response.outputs["dense_7"].float_val
+    print(predictions)
 
     return dict(zip(classes, predictions))
 
@@ -84,4 +85,4 @@ if __name__ == "__main__":
     url = "http://bit.ly/mlbookcamp-pants"
     response = predict(url)
     print(response)
-    # app.run(debug=True, host="0.0.0.0", port=9696)
+    app.run(debug=True, host="0.0.0.0", port=9696)
