@@ -15,6 +15,9 @@ spec:
       containers:
       - name: tf-serving-clothing-model
         image: clothing-model:xception-v4-001
+        env:
+        - name: MODEL_NAME
+          value: "clothing-model"
         resources:
           limits:
             memory: "512Mi"

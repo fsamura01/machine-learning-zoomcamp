@@ -9,12 +9,10 @@ Short, actionable guidance for AI coding agents working on this repo.
 - **Why**: The gateway decouples HTTP clients from TF Serving (gRPC) and handles image preprocessing using `keras_image_helper`.
 
 ## Key files to inspect
-
-- [main.py](main.py) — tiny entrypoint/demo, not the service.
-- [gateway.py](gateway.py) — main service: Flask app, preprocessing, gRPC Predict request construction and response mapping.
-- [model-description.txt](model-description.txt) — documents model signature: input `input_8`, output `dense_7`, signature `serving_default`.
-- [pyproject.toml](pyproject.toml) — lists runtime deps and Python >= 3.11.
-- [test.py](test.py) — example client that posts JSON to the gateway.
+- [gateway.py](../gateway.py) — main service: Flask app, preprocessing, gRPC Predict request construction and response mapping.
+- [model-description.txt](../model-description.txt) — documents model signature: input `input_8`, output `dense_7`, signature `serving_default`.
+- [pyproject.toml](../pyproject.toml) — lists runtime deps and Python >= 3.11.
+- [test.py](../test.py) — example client that posts JSON to the gateway.
 
 ## Integration & runtime notes (concrete)
 
@@ -52,6 +50,13 @@ Short, actionable guidance for AI coding agents working on this repo.
   Or POST JSON to `http://localhost:9696/predict`:
 
   {"url": "http://bit.ly/mlbookcamp-pants"}
+
+## Testing with Postman
+
+- Open Postman and create a new POST request to `http://localhost:9696/predict`.
+- Set the body to raw JSON: `{"url": "http://bit.ly/mlbookcamp-pants"}`.
+- Send the request. Expected response: JSON with class probabilities (e.g., `{"pants": 0.95, ...}`).
+- Ensure TensorFlow Serving is running on port 8500 and the gateway on 9696.
 
 ## Docker images & docker-compose
 
