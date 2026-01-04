@@ -1,0 +1,23 @@
+version: '3.9'
+services:
+  tf-serving:
+    build:
+      context: .
+      dockerfile: image-model.dockerfile
+    ports:
+      - "8500:8500"
+      - "8501:8501"
+    volumes:
+      - ./clothing-model:/models/clothing-model
+    environment:
+      - MODEL_NAME=clothing-model
+  gateway:
+    build:
+      context: .
+      dockerfile: image-gateway.dockerfile
+    ports:
+      - "9696:9696"
+    depends_on:
+      - tf-serving
+    environment:
+      - TF_SERVING_HOST=tf-serving:8500

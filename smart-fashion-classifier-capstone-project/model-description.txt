@@ -55,3 +55,14 @@ docker run -it --rm -p 8500:8500 -p 8501:8501 -v D:\Learning\zoocamp_learning_pa
 docker run -it --rm -p 8500:8500 -p 8501:8501 -v D:\Learning\zoocamp_learning_path\machine-learning-zoomcamp\smart-fashion-classifier-capstone-project\clothing-model:/models/clothing-model -e MODEL_NAME=clothing-model tensorflow/serving:latest
 
 docker run -it --rm -p 8500:8500 -p 8501:8501 zoomcamp-10-model:v1
+
+docker run -it --rm -p 9696:9696 zoomcamp-10-gateway:v1
+
+tensorflow-serving=>sleepy_jackson
+gateway-service =>sharp_einstein
+
+docker network connect ml-network stupefied_ardinghelli
+docker network connect ml-network cool_albattani
+
+
+

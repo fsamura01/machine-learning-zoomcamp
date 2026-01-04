@@ -1,21 +1,23 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-import grpc
-import numpy as np
-from flask import Flask, jsonify, request
-from PIL import Image
-import requests
+import os
 from io import BytesIO
 
+import grpc
+import numpy as np
+import requests
+from flask import Flask, jsonify, request
+from PIL import Image
 from tensorflow_serving.apis import predict_pb2, prediction_service_pb2_grpc
+
 from proto import np_to_protobuf
 
 print("Imports successful!")
 
 app = Flask("smart-fashion-classifier")
 
-host = "localhost:8500"
+host = os.getenv("TF_SERVING_HOST", "localhost:8500")
 channel = grpc.insecure_channel(host)
 prediction_service_stub = prediction_service_pb2_grpc.PredictionServiceStub(channel)
 
@@ -25,23 +27,23 @@ def preprocess_image(url):
     # Download image
     response = requests.get(url)
     img = Image.open(BytesIO(response.content))
-    
+
     # Convert to RGB if needed
-    if img.mode != 'RGB':
-        img = img.convert('RGB')
-    
+    if img.mode != "RGB":
+        img = img.convert("RGB")
+
     # Resize to Xception input size
     img = img.resize((299, 299), Image.LANCZOS)
-    
+
     # Convert to numpy array and normalize
     x = np.array(img, dtype=np.float32)
-    
+
     # Xception preprocessing: scale to [-1, 1]
     x = x / 127.5 - 1.0
-    
+
     # Add batch dimension
     X = np.expand_dims(x, axis=0)
-    
+
     return X
 
 
@@ -95,7 +97,7 @@ def predict_endpoint():
 
 
 if __name__ == "__main__":
-    url = "https://bit.ly/49Dxq1l"
-    predict_response = predict(url)
-    print(predict_response)
-    # app.run(debug=True, host="0.0.0.0", port=9696)
+    # url = "https://bit.ly/49Dxq1l"
+    # predict_response = predict(url)
+    # print(predict_response)
+    app.run(debug=True, host="0.0.0.0", port=9696)
