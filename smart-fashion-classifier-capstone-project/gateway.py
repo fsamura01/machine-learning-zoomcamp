@@ -97,7 +97,7 @@ def predict_endpoint():
 
 
 if __name__ == "__main__":
-    # url = "https://bit.ly/49Dxq1l"
-    # predict_response = predict(url)
-    # print(predict_response)
-    app.run(debug=True, host="0.0.0.0", port=9696)
+    url = "https://bit.ly/49Dxq1l"
+    predict_response = predict(url)
+    print(predict_response)
+    # app.run(debug=True, host="0.0.0.0", port=9696)
