@@ -1,0 +1,15 @@
+[project]
+name = "smart-fashion-classifier-capstone-project"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11,<3.13"
+dependencies = [
+    "flask>=3.1.2",
+    "grpcio>=1.76.0",
+    "protobuf==3.20.3",
+    "tensorflow-serving-api>=2.19.1",
+    "numpy>=1.26.0",
+    "pillow>=10.0.0",
+    "requests>=2.31.0",
+]

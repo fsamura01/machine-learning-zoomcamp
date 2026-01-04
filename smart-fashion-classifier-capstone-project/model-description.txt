@@ -1,0 +1,55 @@
+serving_default
+inputs - input
+output_0 - output
+
+
+docker run -it --rm \
+
+  -v $(pwd)/clothing-model:/models/clothing-model/1 \
+  -e MODEL_NAME="clothing-model" \
+  tensorflow/serving:2.7.0
+
+docker run -it --rm -p 8500:8500 -v D:\Learning\zoocamp_learning_path\machine-learning-zoomcamp\smart-fashion-classifier-capstone-project\clothing-model:/models/clothing-model/1 -e MODEL_NAME=clothing-model tensorflow/serving:latest
+
+docker run -it --rm -p 8500:8500 -v D:\Learning\zoocamp_learning_path\machine-learning-zoomcamp\smart-fashion-classifier-capstone-project\clothing-model:/models/clothing-model/1 -e MODEL_NAME=clothing-model tensorflow/serving:2.7.0
+
+D:\Learning\zoocamp_learning_path\machine-learning-zoomcamp\smart-fashion-classifier-capstone-project\clothing-model\clothing-model
+
+docker run -it --rm -p 8500:8500 -p 8501:8501 `
+  -v "D:\Learning\zoocamp_learning_path\machine-learning-zoomcamp\smart-fashion-classifier-capstone-project\clothing-model\clothing-model:/models/clothing-model/1" `
+  -e MODEL_NAME=clothing-model `
+  tensorflow/serving:2.18.0
+
+  docker run -it --rm -p 8500:8500 -p 8501:8501 -v D:\Learning\zoocamp_learning_path\machine-learning-zoomcamp\smart-fashion-classifier-capstone-project\clothing-model:/models/clothing-model/1 -e MODEL_NAME=clothing-model tensorflow/serving:2.13.0
+
+
+  docker stop 939888f913cf
+  docker rm 939888f913cf
+  
+
+  docker run -it --rm -p 8500:8500 ^
+  -v D:\Learning\zoocamp_learning_path\machine-learning-zoomcamp\smart-fashion-classifier-capstone-project\clothing-model:/models/clothing-model/1 ^
+  -e MODEL_NAME=clothing-model ^
+  tensorflow/serving:2.7.0
+
+
+  docker run -it --rm -p 8500:8500 -p 8501:8501 `
+  -v "D:\Learning\zoocamp_learning_path\machine-learning-zoomcamp\smart-fashion-classifier-capstone-project\clothing-model:/models/clothing-model" `
+  -e MODEL_NAME=clothing-model `
+  tensorflow/serving:2.7.0
+
+
+  docker run -it --rm -p 8500:8500 -p 8501:8501 ^
+ -v "D:\Learning\zoocamp_learning_path\machine-learning-zoomcamp\smart-fashion-classifier-capstone-project\clothing-model:/models/clothing-model/1" ^
+ -e MODEL_NAME=clothing-model ^
+ tensorflow/serving:nightly
+
+
+ saved_model_cli show --dir clothing-model --all
+
+
+docker run -it --rm -p 8500:8500 -p 8501:8501 -v D:\Learning\zoocamp_learning_path\machine-learning-zoomcamp\smart-fashion-classifier-capstone-project\clothing-model:/models/clothing-model/1 -e MODEL_NAME=clothing-model tensorflow/serving:2.16.0
+
+docker run -it --rm -p 8500:8500 -p 8501:8501 -v D:\Learning\zoocamp_learning_path\machine-learning-zoomcamp\smart-fashion-classifier-capstone-project\clothing-model:/models/clothing-model/1 -e MODEL_NAME=clothing-model tensorflow/serving:2.7.0
+
+docker run -it --rm -p 8500:8500 -p 8501:8501 -v D:\Learning\zoocamp_learning_path\machine-learning-zoomcamp\smart-fashion-classifier-capstone-project\clothing-model:/models/clothing-model -e MODEL_NAME=clothing-model tensorflow/serving:latest
