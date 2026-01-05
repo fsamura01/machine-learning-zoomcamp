@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: gateway
-        image: gateway:v1
+        image: fashion-gateway:v1
         ports:
         - containerPort: 9696
         resources:

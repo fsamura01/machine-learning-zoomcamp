@@ -65,8 +65,8 @@ docker network connect ml-network stupefied_ardinghelli
 docker network connect ml-network cool_albattani
 
 # build-image
-docker build -t clothing-model:v1 -f image-gateway.dockerfile .
-docker build -t gateway:v1 -f image-gateway.dockerfile .
+docker build -t clothing-model:v1 -f image-model.dockerfile .
+docker build -t fashion-gateway:v1 -f image-gateway.dockerfile .
 
 kubectl port-forward tf-serving-model-7bd98968c7-kxfrg 8500:8500
 # call the gateway script after the command above from another terminal
@@ -80,3 +80,5 @@ kubectl port-forward gateway-69dfcdc6c6-rzjzc 9696:9696
 
 kubectl port-forward service/gateway 8080:80
 # Now run the test script to test the gateway service
+
+kind load docker-image fashion-gateway:v1
