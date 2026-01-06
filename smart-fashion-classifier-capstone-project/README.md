@@ -44,7 +44,7 @@ The project follows a microservices pattern:
 
 | File Name                                           | Description                                                       |
 | ----------------------------------------------------|-------------------------------------------------------------------|
-| [notebooks\notebook.ipynb](notebooks\notebook.ipynb)| Training pipeline: EDA, Transfer Learning, and Model Export.      |
+| [notebook](notebooks/notebook.ipynb)                | Training pipeline: EDA, Transfer Learning, and Model Export.      |
 | [gateway.py](gateway.py)                            | Flask API for handling user requests and gRPC communication.      |
 | [proto.py](proto.py)                                | Helper script to convert NumPy arrays to Protobuf format for gRPC.|
 | [image-model.dockerfile](image-model.dockerfile)    | Docker config for the TensorFlow Serving inference service.       |
