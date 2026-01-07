@@ -42,19 +42,21 @@ The project follows a microservices pattern:
 
 ## **File Structure Reference**
 
-| File Name                                           | Description                                                       |
-| ----------------------------------------------------|-------------------------------------------------------------------|
-| [notebook](notebooks/notebook.ipynb)                | Training pipeline: EDA, Transfer Learning, and Model Export.      |
-| [gateway.py](gateway.py)                            | Flask API for handling user requests and gRPC communication.      |
-| [proto.py](proto.py)                                | Helper script to convert NumPy arrays to Protobuf format for gRPC.|
-| [image-model.dockerfile](image-model.dockerfile)    | Docker config for the TensorFlow Serving inference service.       |
-| [image-gateway.dockerfile](image-gateway.dockerfile)| Docker config for the Flask-based Gateway service.                |
-| [docker-compose.yaml](docker-compose.yaml)          | Orchestrates both services for local testing.                     |
-| [gateway-deployment.yaml](gateway-deployment.yaml)  | Kubernetes Deployment and Service configuration for EKS.          |
-| [Pipfile](Pipfile)                                  | Python dependency management.                                     |
-| [Pipfile.lock](Pipfile.lock)                        | Python dependency management.                                     |
-| [test.py](test.py)                                  | Script to test the prediction endpoint.                           |
-
+| File Name                                                     | Description                                                       |
+| --------------------------------------------------------------|-------------------------------------------------------------------|
+| [notebook](notebooks/notebook.ipynb)                          | Training pipeline: EDA, Transfer Learning, and Model Export.      |
+| [gateway.py](gateway.py)                                      | Flask API for handling user requests and gRPC communication.      |
+| [proto.py](proto.py)                                          | Helper script to convert NumPy arrays to Protobuf format for gRPC.|
+| [image-model.dockerfile](image-model.dockerfile)              | Docker config for the TensorFlow Serving inference service.       |
+| [image-gateway.dockerfile](image-gateway.dockerfile)          | Docker config for the Flask-based Gateway service.                |
+| [docker-compose.yaml](docker-compose.yaml)                    | Orchestrates both services for local testing.                     |
+| [gateway-deployment.yaml](kube-config\gateway-deployment.yaml)| Kubernetes Deployment for gateway.                                |
+| [gateway-service.yaml](kube-config/model-service.yaml)        | Kubernetes Service configuration for gateway.                     |
+| [model-deployment.yaml](kube-config/model-deployment.yaml)    | Kubernetes Deployment for model.                                  |
+| [model-service.yaml](kube-config/model-service.yaml)          | Kubernetes Service configuration for model.                       |
+| [Pipfile](Pipfile)                                            | Python dependency management.                                     |
+| [Pipfile.lock](Pipfile.lock)                                  | Python dependency management.                                     |
+| [test.py](test.py)                                            | Script to test the prediction endpoint.                           |
 ---
 
 ## **Getting Started**
@@ -83,7 +85,6 @@ The easiest way to run the project is using Docker Compose:
 
 ```bash
 docker-compose up --build
-
 ```
 
 * The **Gateway** will be available at `http://localhost:9696`.
@@ -95,7 +96,6 @@ Run the provided test script [test.py](test.py) to classify a sample image:
 
 ```bash
 python test.py
-
 ```
 
 ---
@@ -118,14 +118,12 @@ nodeGroups:
   - name: ng-m5-xlarge
     instanceType: m5.xlarge
     desiredCapacity: 1
-
 ```
 
 Run the following command to provision the cluster (this takes 15–20 minutes):
 
 ```bash
 eksctl create cluster -f eks-config.yaml
-
 ```
 
 ### 2. Push Images to AWS ECR
@@ -145,7 +143,6 @@ docker tag fashion-gateway:latest ${PREFIX}:fashion-gateway-v1
 
 docker push ${PREFIX}:fashion-model-v1
 docker push ${PREFIX}:fashion-gateway-v1
-
 ```
 
 ### 3. Update Kubernetes Manifests
@@ -159,7 +156,6 @@ spec:
   containers:
   - name: gateway
     image: <ACCOUNT_ID>.dkr.ecr.eu-west-1.amazonaws.com/fashion-images:fashion-gateway-v1
-
 ```
 
 ### 4. Deploy to the Cluster
@@ -174,7 +170,6 @@ kubectl apply -f model-service.yaml
 # Deploy Gateway Service
 kubectl apply -f gateway-deployment.yaml
 kubectl apply -f gateway-service.yaml
-
 ```
 
 ### 5. Verify and Test
@@ -184,7 +179,6 @@ Check the status of your pods and find the external LoadBalancer URL:
 ```bash
 kubectl get pods
 kubectl get service gateway
-
 ```
 
 * **External URL:** Copy the `EXTERNAL-IP` from the gateway service output.
