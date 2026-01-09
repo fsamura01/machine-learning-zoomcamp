@@ -22,11 +22,8 @@ channel = grpc.insecure_channel(host)
 prediction_service_stub = prediction_service_pb2_grpc.PredictionServiceStub(channel)
 
 
-def preprocess_image(url):
+def preprocess_image(img):
     """Custom preprocessing for Xception model"""
-    # Download image
-    response = requests.get(url)
-    img = Image.open(BytesIO(response.content))
 
     # Convert to RGB if needed
     if img.mode != "RGB":
@@ -80,8 +77,8 @@ def prepare_response(predict_response):
     return dict(zip(category_names, pred))
 
 
-def predict(url):
-    X = preprocess_image(url)
+def predict(img):
+    X = preprocess_image(img)
     predict_request = prepare_request(X)
     predict_response = prediction_service_stub.Predict(predict_request, timeout=20.0)
     response = prepare_response(predict_response)
@@ -95,9 +92,19 @@ def health():
 
 @app.route("/predict", methods=["POST"])
 def predict_endpoint():
-    data = request.get_json()
-    url = data["url"]
-    response = predict(url)
+    if "file" in request.files:
+        file = request.files["file"]
+        img = Image.open(file.stream)
+    elif request.is_json and "url" in request.get_json():
+        data = request.get_json()
+        url = data["url"]
+        headers = {"User-Agent": "Mozilla/5.0"}
+        response = requests.get(url, headers=headers)
+        img = Image.open(BytesIO(response.content))
+    else:
+        return jsonify({"error": "No URL or file provided"}), 400
+
+    response = predict(img)
     return jsonify(response)
 
 

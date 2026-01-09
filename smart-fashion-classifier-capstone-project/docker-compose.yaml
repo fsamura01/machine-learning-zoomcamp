@@ -1,23 +1,25 @@
-version: '3.9'
+version: "3.9"
 services:
-  tf-serving:
-    build:
-      context: .
-      dockerfile: image-model.dockerfile
-    ports:
-      - "8500:8500"
-      - "8501:8501"
-    volumes:
-      - ./clothing-model:/models/clothing-model
-    environment:
-      - MODEL_NAME=clothing-model
-  gateway:
+  clothing-model: # tf-serving model
+    image: clothing-model:v1
+  gateway: # flask gateway service
+    image: fashion-gateway:v1 # new version
     build:
       context: .
       dockerfile: image-gateway.dockerfile
-    ports:
-      - "9696:9696"
-    depends_on:
-      - tf-serving
     environment:
-      - TF_SERVING_HOST=tf-serving:8500
+      - TF_SERVING_HOST=clothing-model:8500 # look for clothing model and port 8500
+    ports: # map host machine with gateway
+      - "9696:9696"
+    
+  image-frontend:
+    image: fashion-frontend:latest
+    build:
+      context: .
+      dockerfile: image-frontend.dockerfile
+    ports:
+      - "8501:8501"
+    environment:
+      - GATEWAY_URL=http://gateway:9696/predict
+    depends_on:
+      - gateway
