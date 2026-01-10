@@ -25,7 +25,16 @@ prediction_service_stub = prediction_service_pb2_grpc.PredictionServiceStub(chan
 def preprocess_image(img):
     """Custom preprocessing for Xception model"""
 
-    # Convert to RGB if needed
+    # If the input is a string (URL), download it. 
+    # If it's already a PIL image, skip downloading.
+    if isinstance(img, str):
+        response = requests.get(img)
+        img = Image.open(BytesIO(response.content))
+    else:
+        # img is already a PIL Image (or at least we assume so if it's not a string)
+        pass
+
+    # Convert to RGB if needed    
     if img.mode != "RGB":
         img = img.convert("RGB")
 
@@ -56,14 +65,14 @@ def prepare_request(X):
 category_names = [
     "Belts",
     "Briefs",
-    "Casual Shoes",
-    "Flip Flops",
+    "Casual_Shoes",
+    "Flip_Flops",
     "Handbags",
     "Heels",
     "Kurtas",
     "Sandals",
     "Shirts",
-    "Sports Shoes",
+    "Sports_Shoes",
     "Sunglasses",
     "Tops",
     "Tshirts",
@@ -80,7 +89,7 @@ def prepare_response(predict_response):
 def predict(img):
     X = preprocess_image(img)
     predict_request = prepare_request(X)
-    predict_response = prediction_service_stub.Predict(predict_request, timeout=20.0)
+    predict_response = prediction_service_stub.Predict(predict_request, timeout=60.0)
     response = prepare_response(predict_response)
     return response
 
@@ -109,7 +118,7 @@ def predict_endpoint():
 
 
 if __name__ == "__main__":
-    # url = "https://bit.ly/49Dxq1l"
-    # predict_response = predict(url)
-    # print(predict_response)
+    #url = "https://raw.githubusercontent.com/fsamura01/machine-learning-zoomcamp/main/smart-fashion-classifier-capstone-project/10005.jpg"
+    #predict_response = predict(url)
+    #print(predict_response)
     app.run(debug=True, host="0.0.0.0", port=9696)
