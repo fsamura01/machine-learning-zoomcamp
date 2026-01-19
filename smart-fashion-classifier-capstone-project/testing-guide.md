@@ -12,6 +12,53 @@ docker build -t fashion-gateway:v1 -f image-gateway.dockerfile .
 docker build -t fashion-frontend:v1 -f image-frontend.dockerfile .
 ```
 
+### Using Kind (Kubernetes in Docker)?
+If you are using **Kind**, you must load the images into the cluster so they are available to your pods.
+
+**1. Load Local Images**
+```bash
+kind load docker-image clothing-model:v1 fashion-gateway:v1 fashion-frontend:v1
+```
+*Note: You can target a specific cluster with `--name cluster-name`.*
+
+**2. Image Pull Policy**
+Ensure your deployment YAML files set `imagePullPolicy: IfNotPresent` or `Never`. If set to `Always`, Kubernetes will try (and fail) to pull from Docker Hub.
+
+**3. Alternative: Image Archives**
+If you have a `.tar` archive:
+```bash
+kind load image-archive /path/to/image.tar
+```
+
+**4. Verify Loaded Images**
+To check what images are on a node:
+```bash
+docker exec -it <kind-node-name> crictl images
+```bash
+docker exec -it <kind-node-name> crictl images
+```
+
+**5. Cluster Inspection Commands**
+Useful commands to check the status of your nodes and the underlying Docker containers running the cluster.
+
+*   **List Node Names:**
+    ```bash
+    kubectl get nodes -o name
+    ```
+    *Purpose:* Returns just the names of the nodes (e.g., `node/kind-control-plane`). Useful for scripting or getting the exact name for `docker exec`.
+
+*   **Detailed Node info:**
+    ```bash
+    kubectl get nodes -o wide
+    ```
+    *Purpose:* Shows detailed information including Internal-IP, External-IP, OS Image, Kernel-Version, and Container Runtime. Use this to verify network configs.
+
+*   **Find Kind Containers (Docker):**
+    ```bash
+    docker ps --filter "label=io.x-k8s.kind.cluster"
+    ```
+    *Purpose:* Lists only the Docker containers that are acting as Kubernetes nodes for your Kind cluster. Use this to find the Container ID if you need to inspect the "node" itself from the outside.
+
 ## 2. Deploy Services
 
 Apply the configuration files in `kube-config/`. Order matters slightly (best to have services up for pods to find).

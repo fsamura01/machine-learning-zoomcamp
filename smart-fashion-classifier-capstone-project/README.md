@@ -1,4 +1,4 @@
-# **Smart Fashion Classifier**
+# **Smart Fashion Classifier Version 2.0 With Streamlit UI**
 
 ## **Project Overview**
 
@@ -57,6 +57,11 @@ The project follows a microservices pattern:
 | [Pipfile](Pipfile)                                            | Python dependency management.                                     |
 | [Pipfile.lock](Pipfile.lock)                                  | Python dependency management.                                     |
 | [test.py](test.py)                                            | Script to test the prediction endpoint.                           |
+| [demo_video.webm](demo_video.webm)                            | Demo Video of the application.                                    |
+| [image-frontend.dockerfile](image-frontend.dockerfile)        | To containerize the UI.                                           |
+| [cloud-deployment-guide](cloud-deployment-guide.md)           | Comprehensive guide for deploying to AWS EKS.                     |
+| [streamlit-deployment-guide](streamlit-deployment-guide.md)   | Comprehensive guide for deploying to Streamlit Cloud.             |
+| [testing-guide](testing-guide.md)                             | Covering local Kubernetes (Kind) and port-forwarding.             |
 ---
 
 ## **Getting Started**
@@ -198,9 +203,28 @@ The Gateway service is configured to find the model service via its internal DNS
 2. **Accessing the App:**
 Expose the Gateway via a LoadBalancer or Ingress to receive external traffic on port `9696`.
 
-## **Next Step**
+## **What's New in Version 2.0: Interactive Streamlit UI**
 
-**Proposed Next Step:
-Interactive Streamlit Frontend**
+I have upgraded the project from a raw API to a full-stack ML application with a user-friendly interface.
 
-While the current EKS deployment provides a robust backend API, the next stage of the project is to build an Interactive Web Dashboard using Streamlit. This would transform the API into a user-facing product where users can visually interact with the model.
+### **Interactive Streamlit Frontend**
+The new frontend [streamlit-frontend](streamlit-frontend/app.py) allows non-technical users to interact with the model seamlessly.
+
+*   **Image Upload & URL Support:** users can upload local files or paste image URLs.
+*   **Visual Confidence Scores:** A bar chart visualizes the predicted categories and their confidence levels.
+*   **Decoupled Architecture:** The frontend is a separate microservice (`fashion-frontend`) that communicates with the API Gateway via REST/HTTP.
+
+### **Demo Recording**
+
+[Demo Video](demo_video.webm)
+
+### **Deployment Updates**
+*   **Frontend Docker Image:** Created [image-frontend.dockerfile](image-frontend.dockerfile) to containerize the UI.
+*   **Cloud Guides:** Added comprehensive documentation for deploying to **AWS EKS** [cloud-deployment-guide](cloud-deployment-guide.md) and **Streamlit Cloud** [streamlit-deployment-guide](streamlit-deployment-guide.md)
+*   **Testing:** New [testing-guide](testing-guide.md) covering local Kubernetes (Kind) and port-forwarding.
+
+## **Future Roadmap**
+
+*   **CI/CD Pipeline:** Automate the build and push process using GitHub Actions.
+*   **Model Monitoring:** Integrate Prometheus/Grafana to track prediction latency and drift.
+*   **HTTPS/SSL:** Secure the Gateway with TLS certificates for production use.

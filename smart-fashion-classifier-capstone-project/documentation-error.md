@@ -184,7 +184,20 @@ This command creates a tunnel from your local machine (laptop) to the Kubernetes
 `service/frontend: Targets the Kubernetes Service named "frontend"`.
 `8080 (Local): The port on your laptop.`
 `80 (Remote): The port the Service is listening on.`
-This creates the tunnel: `Laptop (8080) -> Service (80) -> Container (8501)`.
+This creates the tunnel: `Laptop (8080) -> Service (80) -> Container (8501)`
+.
+
+### Why is the Gateway service set to `type: LoadBalancer`?
+
+We use `type: LoadBalancer` for the Gateway to allow **external access** (e.g., from your laptop's terminal using `test.py` or curl).
+
+1.  **Dual Access:** It allows the Service to be reached both internally (by the Frontend) and externally (by you).
+2.  **External IP:** In cloud environments (AWS/GCP), this provisions a real IP. In local clusters (Docker Desktop/Minikube), it often maps to `localhost`.
+3.  **Flexibility:** This setup lets you debug the API directly without needing to go through the Frontend UI every time.
+
+**Configuration Check:**
+*   Is it okay? **Yes.**
+*   Are `test.py` and `app.py` conflicting? **No.** `test.py` uses the external access (LoadBalancer), while `app.py` (running inside the cluster) uses the internal DNS name (`gateway`).
 
 ---
 

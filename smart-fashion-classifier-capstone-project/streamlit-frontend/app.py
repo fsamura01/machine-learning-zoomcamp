@@ -34,7 +34,7 @@ with tabs[0]:
 
 
 with tabs[1]:
-    url_input = st.text_input("Paste image URL here:", "https://raw.githubusercontent.com/fsamura01/machine-learning-zoomcamp/main/smart-fashion-classifier-capstone-project/10005.jpg")
+    url_input = st.text_input("Paste image URL here:")
     if url_input:
         image_url_to_send = url_input
         try:
